@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QUEBRA DE AGENDA – TOA SALVADOR</title>
+<script>
+function loadScriptFallback(u,n,d){let i=0;function t(){if(i>=u.length){console.error("Falhou:",n);d(false);return;}const s=document.createElement("script");s.src=u[i++];s.async=false;s.onload=()=>d(true);s.onerror=()=>{console.warn("CDN falhou:",s.src);t();};document.head.appendChild(s);}t();}
+window._libsReady={chart:false,dl:false};
+function _checkReady(){if(window._libsReady.chart&&window._libsReady.dl){if(!window._libsFired){window._libsFired=true;document.dispatchEvent(new CustomEvent("libsReady"));}}}
+loadScriptFallback(["https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js","https://unpkg.com/chart.js@4.4.1/dist/chart.umd.min.js","https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"],"Chart",ok=>{window._libsReady.chart=ok;_checkReady();});
+loadScriptFallback(["https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js","https://unpkg.com/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js","https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"],"DataLabels",ok=>{window._libsReady.dl=ok;_checkReady();});
+setTimeout(()=>{if(!window._libsFired&&window.Chart){window._libsFired=true;document.dispatchEvent(new CustomEvent("libsReady"));}},3000);
+</script>
+<style>
+:root{--primary:#d71920;--primary-dark:#a5121a;--bg:#f4f5f7;--card:#fff;--text:#222;--muted:#666;--border:#e3e5e8;--green:#2fa84f;--amber:#f2b84b;--red:#d71920;--blue:#2f6fd7}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+header{background:#fff;border-bottom:3px solid var(--primary);padding:14px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 4px rgba(0,0,0,.05);position:sticky;top:0;z-index:100}
+header h1{margin:0;font-size:20px;color:var(--primary);letter-spacing:.5px}
+.header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--border);background:#fff;color:#444;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px}
+.btn:hover{background:#f0f0f0}
+.btn.subtle{background:#fafafa;color:#555}
+#fileInput{display:none}
+.container{padding:14px 24px 60px}
+.status-bar{background:#eef1f4;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:#333;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.status-bar b{color:var(--primary)}
+.status-bar.error{background:#ffecec;border-color:#f5c2c2;color:#a5121a}
+.filters{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.filter-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.filter-header label{font-weight:600;font-size:13px;color:#333;margin:0}
+.filter-clear{color:var(--primary);cursor:pointer;font-size:11px;font-weight:600;padding:2px 8px;border:1px solid var(--primary);border-radius:10px;background:#fff;user-select:none;transition:.15s}
+.filter-clear:hover{background:var(--primary);color:#fff}
+.filter-clear.hidden{display:none}
+.multiselect{position:relative}
+.ms-toggle{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.ms-toggle:after{content:"\25be";color:#888;margin-left:6px}
+.ms-panel{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:6px;max-height:320px;overflow:auto;padding:0;z-index:20;display:none;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.ms-panel.open{display:block}
+.ms-panel label{display:flex;align-items:center;gap:6px;padding:4px 10px;font-weight:400;cursor:pointer;border-radius:4px;font-size:13px}
+.ms-panel label:hover{background:#f4f5f7}
+.ms-search{position:sticky;top:0;background:#fff;padding:8px 8px 6px;border-bottom:1px solid var(--border);z-index:2}
+.ms-search input{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;outline:none}
+.ms-search input:focus{border-color:var(--primary)}
+.ms-actions{display:flex;gap:12px;padding:6px 10px;border-bottom:1px solid #f0f0f0;font-size:11px;background:#fafafa}
+.ms-actions a{color:var(--primary);cursor:pointer;text-decoration:none;font-weight:600;user-select:none}
+.ms-actions a:hover{text-decoration:underline}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--primary);color:#fff;padding:3px 10px;border-radius:14px;font-size:12px;display:inline-flex;align-items:center;gap:6px;max-width:100%;word-break:break-word}
+.chip span.x{cursor:pointer;font-weight:bold}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:2px solid var(--border);margin-bottom:16px}
+.tab{padding:9px 16px;background:transparent;border:none;cursor:pointer;font-size:14px;color:#555;border-bottom:3px solid transparent;margin-bottom:-2px;font-weight:500}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab:hover{color:var(--primary)}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.card h3{margin:0 0 12px 0;font-size:16px;color:#333;text-align:center}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px}
+.chart-wrap{position:relative;height:420px}
+.chart-wrap.tall{height:460px}
+.chart-wrap.mini{height:230px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border:1px solid var(--border);text-align:center}
+th{background:#f7f7f9;font-weight:600}
+.funnel-bar{position:relative;background:#eef1f4;border-radius:5px;overflow:hidden;height:22px;min-width:60px}
+.funnel-fill{position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,var(--primary),#f26268);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:#fff;font-size:11px;font-weight:600}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--border);border-left:4px solid var(--primary);padding:12px;border-radius:8px}
+.kpi .k-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.kpi .k-val{font-size:18px;font-weight:700;color:#222;margin-top:4px}
+.pivot-header{background:#000;color:#fff;text-align:center;padding:10px;font-weight:700;letter-spacing:1px;border-radius:6px 6px 0 0}
+.pivot-title{background:#fff;text-align:center;padding:8px;font-weight:700;color:#333;border:1px solid var(--border);border-top:none}
+table.pivot th{background:var(--primary-dark);color:#fff;font-weight:700}
+table.pivot td:first-child,table.pivot th:first-child{text-align:left}
+table.pivot tbody tr:nth-child(even){background:#fafafa}
+.empty-hint{text-align:center;padding:60px 20px;color:#888;font-size:15px;background:#fff;border:1px dashed var(--border);border-radius:10px}
+@media(max-width:640px){header h1{font-size:16px}.container{padding:12px}}
+</style></head><body>
+<header><h1>QUEBRA DE AGENDA \u2013 TOA SALVADOR</h1>
+<div class="header-actions">
+<label for="fileInput" class="btn subtle">\u2b06 Upload</label>
+<input type="file" id="fileInput" accept=".xls,.xlsx,.csv"/>
+<button class="btn" id="btnCsv">Baixar CSV filtrado</button>
+<button class="btn" id="btnClear">Limpar filtros</button>
+</div></header>
+<div class="container">
+<div class="status-bar" id="statusBar">
+<span>\U0001f4c4 Arquivo: <b id="stFile">\u2014</b></span>
+<span>\U0001f5c2\ufe0f Aba: <b id="stSheet">\u2014</b></span>
+<span>\U0001f4ca Linhas brutas: <b id="stRaw">0</b></span>
+<span>\U0001f9f9 Ap\xf3s regras: <b id="stProcessed">0</b></span>
+<span>\U0001f50e Ap\xf3s filtros: <b id="stFiltered">0</b></span>
+<span id="stMsg" style="color:#a5121a"></span>
+</div>
+<div class="filters">
+<div class="filter-block"><div class="filter-header"><label>Categorias da Capacidade</label><span class="filter-clear hidden" data-clear="categoria">\u2715 Limpar</span></div>
+<div class="multiselect" id="msCategoria"><div class="ms-toggle" data-target="msCategoriaPanel"><span class="ms-label">Selecionar\u2026</span></div><div class="ms-panel" id="msCategoriaPanel"></div><div class="chips" id="chipsCategoria"></div></div></div>
+<div class="filter-block"><div class="filter-header"><label>UN</label><span class="filter-clear hidden" data-clear="un">\u2715 Limpar</span></div>
+<div class="multiselect" id="msUn"><div class="ms-toggle" data-target="msUnPanel"><span class="ms-label">Selecionar\u2026</span></div><div class="ms-panel" id="msUnPanel"></div><div class="chips" id="chipsUn"></div></div></div>
+<div class="filter-block"><div class="filter-header"><label>M\xeas / Ano</label><span class="filter-clear hidden" data-clear="mes">\u2715 Limpar</span></div>
+<div class="multiselect" id="msMes"><div class="ms-toggle" data-target="msMesPanel"><span class="ms-label">Selecionar\u2026</span></div><div class="ms-panel" id="msMesPanel"></div><div class="chips" id="chipsMes"></div></div></div>
+<div class="filter-block"><div class="filter-header"><label>Data</label><span class="filter-clear hidden" data-clear="data">\u2715 Limpar</span></div>
+<div class="multiselect" id="msData"><div class="ms-toggle" data-target="msDataPanel"><span class="ms-label">Selecionar\u2026</span></div><div class="ms-panel" id="msDataPanel"></div><div class="chips" id="chipsData"></div></div></div>
+<div class="filter-block"><div class="filter-header"><label>Quebras (C\xf3d Baixa 1)</label><span class="filter-clear hidden" data-clear="quebra">\u2715 Limpar</span></div>
+<div class="multiselect" id="msQuebra"><div class="ms-toggle" data-target="msQuebraPanel"><span class="ms-label">Selecionar\u2026</span></div><div class="ms-panel" id="msQuebraPanel"></div><div class="chips" id="chipsQuebra"></div></div></div>
+<div class="filter-block"><div class="filter-header"><label>Tipo de Atividade</label><span class="filter-clear hidden" data-clear="tipo">\u2715 Limpar</span></div>
+<div class="multiselect" id="msTipo"><div class="ms-toggle" data-target="msTipoPanel"><span class="ms-label">Selecionar\u2026</span></div><div class="ms-panel" id="msTipoPanel"></div><div class="chips" id="chipsTipo"></div></div></div>
+</div>
+<div class="tabs">
+<button class="tab active" data-tab="visao">Vis\xe3o Executiva</button>
+<button class="tab" data-tab="agenda">Quebra Agenda Janela</button>
+<button class="tab" data-tab="pareto">Pareto</button>
+<button class="tab" data-tab="evolutivo">Evolutivo</button>
+<button class="tab" data-tab="evoquebras">Evolutivo Quebras TOP 6</button>
+<button class="tab" data-tab="login">Login Ofensor</button>
+</div>
+<div class="panel active" id="tab-visao">
+<div class="grid-2">
+<div class="card"><h3>C\xf3d Baixa (%) \u2013 Top 20</h3><div class="chart-wrap tall"><canvas id="chartCodBaixa"></canvas></div></div>
+<div class="card"><h3>UN (%)</h3><div class="chart-wrap"><canvas id="chartUn"></canvas></div></div>
+</div>
+<div class="kpi-row" id="visaoKpis"></div>
+<div class="card"><h3>C\xf3d Baixa \u2013 Pontos Percentuais sobre Total de Contratos</h3><div class="chart-wrap tall"><canvas id="chartCodBaixaPP"></canvas></div></div>
+</div>
+<div class="panel" id="tab-agenda"><div class="card"><h3>Janela de Servi\xe7o (08-12 \xb7 12-15 \xb7 15-18)</h3><div class="chart-wrap tall"><canvas id="chartAgenda"></canvas></div></div></div>
+<div class="panel" id="tab-pareto"><div class="card"><h3>Pareto \u2013 Top 6 Motivos (C\xf3d de Baixa 1)</h3><div class="chart-wrap tall"><canvas id="chartPareto"></canvas></div></div></div>
+<div class="panel" id="tab-evolutivo"><div id="evolutivoContainer" class="grid-2"></div></div>
+<div class="panel" id="tab-evoquebras">
+<div class="card" style="padding:0;overflow:hidden"><div class="pivot-header">EVOLUTIVO QUEBRAS TOP 6</div><div class="pivot-title">Quebras de Agenda</div><div style="overflow:auto"><table class="pivot" id="pivotTable"></table></div></div>
+<div class="card"><h3>Evolu\xe7\xe3o Semanal \u2013 Top 6 Quebras (%)</h3><div class="chart-wrap tall"><canvas id="chartEvoQuebrasLine"></canvas></div></div>
+<div class="card"><h3>Compara\xe7\xe3o Mensal \u2013 Top 6 Quebras (%)</h3><div class="chart-wrap tall"><canvas id="chartEvoQuebrasStacked"></canvas></div></div>
+<div class="card"><h3>Quebras Di\xe1rias \u2013 Top 6 (%)</h3><div class="chart-wrap tall"><canvas id="chartEvoQuebrasDaily"></canvas></div></div>
+<div class="kpi-row" id="volKpis"></div>
+<div class="card"><h3>Volume Di\xe1rio de Quebras (%)</h3><div class="chart-wrap tall"><canvas id="chartEvoQuebrasVolume"></canvas></div></div>
+</div>
+<div class="panel" id="tab-login"><div class="card"><h3>Login Ofensor</h3>
+<div style="overflow:auto"><table id="loginTable"><thead><tr><th>Login</th><th>Motivo</th><th>UN</th><th>Quantidade</th><th>Pontos percentuais</th></tr></thead><tbody></tbody></table></div>
+</div></div>
+<div class="empty-hint" id="emptyHint">Fa\xe7a upload de um arquivo XLSX ou CSV para carregar os dados.<br><small style="color:#666">\u2705 Leitor Excel nativo integrado \u2014 funciona 100% offline</small></div>
+</div>
+<script>
+const CATEGORIAS_VISIVEIS=["Classe 1","Classe 1 (PME)","Classe 15"];
+const CLASSES_EXCLUIDAS_NUM=[4,5,6,7,8,9,10,12,14];
+const JANELAS_AGENDA=["08 - 12","12 - 15","15 - 18"];
+const SEM_INFO_TOKENS=["sem informa\u00e7\u00e3o","sem informacao","","-","n/a","na","nd","null","undefined"];
+const PALETTE=["#d71920","#2f6fd7","#2fa84f","#f2b84b","#7f3fbf","#e07b00"];
+let RAW=[],PROCESSED=[],FILTERED=[];
+let charts={};
+let selCategoria=new Set(CATEGORIAS_VISIVEIS);
+let selUn=new Set(),selMes=new Set(),selData=new Set(),selQuebra=new Set(),selTipo=new Set();
+let sheetUsed="\u2014",fileName="\u2014";
+
+function normalize(s){if(s===null||s===undefined)return"";return String(s).trim();}
+function isSemInfo(v){return SEM_INFO_TOKENS.includes(normalize(v).toLowerCase());}
+function isExecutado(cb){const s=normalize(cb).toLowerCase();return s.startsWith("409")||s.includes("servico concluido")||s.includes("servi\u00e7o conclu\u00eddo");}
+function isQuebra(r){return !isSemInfo(r.codBaixa)&&!isExecutado(r.codBaixa);}
+function toDateStr(v){
+  if(v===null||v===undefined||v==="")return"";
+  if(v instanceof Date&&!isNaN(v)){const y=v.getUTCFullYear(),m=v.getUTCMonth()+1,d=v.getUTCDate();if(y<1970){const y2=v.getFullYear(),m2=v.getMonth()+1,d2=v.getDate();return `${y2}-${String(m2).padStart(2,"0")}-${String(d2).padStart(2,"0")}`;}return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;}
+  const s=String(v).trim();
+  let m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if(m){let y=m[3];if(y.length===2)y=(parseInt(y)>=70?"19":"20")+y;return `${y}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;}
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m)return `${m[1]}-${m[2]}-${m[3]}`;
+  if(!isNaN(Number(s))){const num=Number(s);if(num>20000&&num<80000){const d=new Date(Math.round((num-25569)*86400*1000));return d.toISOString().slice(0,10);}}
+  return "";
+}
+function ddmm(d){if(!d)return"";const m=d.match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[3]}/${m[2]}`:d;}
+function classeNumero(c){const s=normalize(c).toLowerCase();const m=s.match(/classe\s*(\d+)/);return m?parseInt(m[1]):null;}
+function categoriaMatchesAny(c,set){const p=c.split(",").map(s=>s.trim()).filter(Boolean);if(!p.length)return false;for(const x of p){if(set.has(x))return true;}return set.has(c);}
+function pct(v,t){return t>0?(v/t*100):0;}
+function fmtPct(v){return (Math.round(v*10)/10).toFixed(1)+"%";}
+
+async function parseXlsxNative(buf){
+  const files=await unzipXlsx(buf);
+  const ss=parseSharedStrings(files["xl/sharedStrings.xml"]||"");
+  const ds=parseStyles(files["xl/styles.xml"]||"");
+  const sf=Object.keys(files).filter(k=>k.startsWith("xl/worksheets/sheet")&&k.endsWith(".xml"));
+  const res={};
+  for(const x of sf){const key=x.replace("xl/worksheets/","").replace(".xml","");res[key]=parseWorksheet(files[x],ss,ds);}
+  const wbx=files["xl/workbook.xml"];const nm={};
+  if(wbx){const doc=new DOMParser().parseFromString(wbx,"text/xml");const sh=doc.getElementsByTagName("sheet");for(let i=0;i<sh.length;i++)nm["sheet"+(i+1)]=sh[i].getAttribute("name");}
+  const fs={},fn=[];
+  for(const k of Object.keys(res)){const dn=nm[k]||k;fs[dn]=res[k];fn.push(dn);}
+  return {SheetNames:fn,Sheets:fs};
+}
+async function unzipXlsx(buffer){
+  const data=new Uint8Array(buffer),view=new DataView(buffer);
+  let eo=-1;const ss=Math.max(0,data.length-65558);
+  for(let i=data.length-22;i>=ss;i--)if(data[i]===0x50&&data[i+1]===0x4b&&data[i+2]===0x05&&data[i+3]===0x06){eo=i;break;}
+  if(eo<0)throw new Error("Arquivo XLSX inv\u00e1lido");
+  const te=view.getUint16(eo+10,true),co=view.getUint32(eo+16,true);
+  let ptr=co;const ent=[];
+  for(let i=0;i<te;i++){
+    if(view.getUint32(ptr,true)!==0x02014b50)throw new Error("Registro CD inv\u00e1lido");
+    const cm=view.getUint16(ptr+10,true),cs=view.getUint32(ptr+20,true),fnl=view.getUint16(ptr+28,true),el=view.getUint16(ptr+30,true),cl=view.getUint16(ptr+32,true),lho=view.getUint32(ptr+42,true);
+    const fn=new TextDecoder("utf-8").decode(data.subarray(ptr+46,ptr+46+fnl));
+    ent.push({fileName:fn,compressionMethod:cm,compressedSize:cs,localHeaderOffset:lho});
+    ptr+=46+fnl+el+cl;
+  }
+  const files={};
+  for(const e of ent){
+    if(!e.fileName.startsWith("xl/"))continue;
+    const lho=e.localHeaderOffset;
+    if(view.getUint32(lho,true)!==0x04034b50)throw new Error("Local header inv\u00e1lido");
+    const lfnLen=view.getUint16(lho+26,true),lexLen=view.getUint16(lho+28,true);
+    const ds=lho+30+lfnLen+lexLen;
+    const rd=data.subarray(ds,ds+e.compressedSize);
+    let content;
+    if(e.compressionMethod===0){content=new TextDecoder("utf-8").decode(rd);}
+    else if(e.compressionMethod===8){
+      if(typeof DecompressionStream==="undefined")throw new Error("Navegador sem suporte a DecompressionStream. Use Chrome/Edge 80+.");
+      const st=new Blob([rd]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+      const d=await new Response(st).arrayBuffer();
+      content=new TextDecoder("utf-8").decode(d);
+    }else continue;
+    files[e.fileName]=content;
+  }
+  return files;
+}
+function parseSharedStrings(xml){if(!xml)return[];const doc=new DOMParser().parseFromString(xml,"text/xml");const sis=doc.getElementsByTagName("si"),out=[];for(let i=0;i<sis.length;i++){let t="";const ts=sis[i].getElementsByTagName("t");for(let j=0;j<ts.length;j++)t+=ts[j].textContent;out.push(t);}return out;}
+function parseStyles(xml){if(!xml)return new Set();const doc=new DOMParser().parseFromString(xml,"text/xml"),cd={};const nfList=doc.getElementsByTagName("numFmt"),bi=new Set([14,15,16,17,18,19,20,21,22,45,46,47]);for(let i=0;i<nfList.length;i++){const id=parseInt(nfList[i].getAttribute("numFmtId"));const c=nfList[i].getAttribute("formatCode")||"";if(/[ymdhs]/i.test(c)&&!c.includes("General"))cd[id]=true;}const ds=new Set();const cx=doc.getElementsByTagName("cellXfs")[0];if(cx){const xfs=cx.getElementsByTagName("xf");for(let i=0;i<xfs.length;i++){const n=parseInt(xfs[i].getAttribute("numFmtId")||"0");if(bi.has(n)||cd[n])ds.add(i);}}return ds;}
+function colLetterToIndex(l){let n=0;for(let i=0;i<l.length;i++)n=n*26+(l.charCodeAt(i)-64);return n-1;}
+function excelSerialToDate(s){return new Date(Math.round((s-25569)*86400*1000));}
+function parseWorksheet(xml,ss,ds){
+  const doc=new DOMParser().parseFromString(xml,"text/xml");
+  const rx=doc.getElementsByTagName("row");
+  if(!rx.length)return[];
+  const pr=(re)=>{
+    const cells=re.getElementsByTagName("c"),arr=[];
+    for(let i=0;i<cells.length;i++){
+      const c=cells[i],ref=c.getAttribute("r")||"",cm=ref.match(/^([A-Z]+)/);
+      if(!cm)continue;
+      const ci=colLetterToIndex(cm[1]),t=c.getAttribute("t"),si=parseInt(c.getAttribute("s")||"-1");
+      const vE=c.getElementsByTagName("v")[0],iE=c.getElementsByTagName("is")[0];
+      let v="";
+      if(iE){const t2=iE.getElementsByTagName("t")[0];v=t2?t2.textContent:"";}
+      else if(vE){const r=vE.textContent;
+        if(t==="s"){v=ss[parseInt(r)]||"";}
+        else if(t==="b"){v=r==="1";}
+        else if(t==="str"||t==="inlineStr"){v=r;}
+        else{const n=parseFloat(r);if(!isNaN(n)){if(ds&&ds.has(si)&&n>20&&n<80000)v=excelSerialToDate(n);else v=n;}else v=r;}
+      }
+      arr[ci]=v;
+    }
+    return arr;
+  };
+  const ha=pr(rx[0]),headers=ha.map(h=>h===undefined||h===null?"":String(h).trim()),result=[];
+  for(let i=1;i<rx.length;i++){
+    const ra=pr(rx[i]),obj={};let hc=false;
+    for(let j=0;j<headers.length;j++){const h=headers[j];if(!h)continue;const v=ra[j];obj[h]=(v===undefined||v===null)?"":v;if(v!==undefined&&v!==null&&v!=="")hc=true;}
+    if(hc)result.push(obj);
+  }
+  return result;
+}
+function parseCsvNative(text){
+  const lines=text.split(/\r?\n/).filter(l=>l.trim().length>0);
+  if(!lines.length)return[];
+  const f=lines[0],dl=f.split(";").length>f.split(",").length?";":",";
+  function pl(line){const o=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){c+='"';i++;}else q=!q;}else if(ch===dl&&!q){o.push(c);c="";}else c+=ch;}o.push(c);return o;}
+  const headers=pl(lines[0]).map(h=>h.trim());
+  return lines.slice(1).map(l=>{const c=pl(l),o={};headers.forEach((h,i)=>{o[h]=(c[i]||"").trim();});return o;});
+}
+function findKey(row,aliases){
+  const keys=Object.keys(row),norm=s=>s.toLowerCase().replace(/\s+/g," ").trim();
+  for(const a of aliases){const x=norm(a);for(const k of keys)if(norm(k)===x)return k;}
+  for(const a of aliases){const x=norm(a);for(const k of keys)if(norm(k).includes(x))return k;}
+  return null;
+}
+function mapRows(rows){
+  if(!rows.length)return[];
+  const s=rows[0];
+  const kCat=findKey(s,["Categorias da Capacidade","Categoria da Capacidade","Categoria"]);
+  const kUn=findKey(s,["Recurso Pai","UN"]);
+  const kCod=findKey(s,["C\u00f3d de Baixa 1","Cod de Baixa 1","C\u00f3digo de Baixa 1","Codigo de Baixa 1"]);
+  const kJan=findKey(s,["Janela de Servi\u00e7o","Janela de Servico","Janela"]);
+  const kIni=findKey(s,["In\u00edcio","Inicio","Hora In\u00edcio"]);
+  const kCon=findKey(s,["Contrato"]);
+  const kDat=findKey(s,["Data"]);
+  const kLog=findKey(s,["Login do T\u00e9cnico","Login do Tecnico","Login T\u00e9cnico","Login"]);
+  const kTipo=findKey(s,["Tipo de Atividade_2","Tipo Atividade_2","Tipo de Atividade","Tipo Atividade"]);
+  return rows.map(r=>({categoria:normalize(r[kCat]),un:normalize(r[kUn]),codBaixa:normalize(r[kCod]),janela:normalize(r[kJan]),inicio:r[kIni],contrato:normalize(r[kCon]),data:r[kDat],login:normalize(r[kLog]),tipoAtividade:normalize(r[kTipo])}));
+}
+function pickSheet(wb){
+  const t=["categorias da capacidade","recurso pai","c\u00f3d de baixa 1","cod de baixa 1"];
+  let bn=wb.SheetNames[0],bs=-1,b=null;
+  for(const n of wb.SheetNames){
+    const r=wb.Sheets[n];
+    if(!r||!r.length)continue;
+    const k=Object.keys(r[0]).map(x=>x.toLowerCase());
+    let sc=0;t.forEach(x=>{if(k.some(y=>y.includes(x)))sc++;});
+    if(sc>bs){bs=sc;bn=n;b=r;}
+  }
+  if(!b)b=wb.Sheets[bn]||[];
+  return {name:bn,rows:b};
+}
+function applyGlobalRules(rows){
+  const seen=new Set(),out=[];
+  for(const r of rows){
+    const cn=classeNumero(r.categoria);
+    if(cn!==null&&CLASSES_EXCLUIDAS_NUM.includes(cn))continue;
+    const dt=toDateStr(r.data);
+    if(r.contrato&&dt){const k=r.contrato+"|"+dt;if(seen.has(k))continue;seen.add(k);}
+    out.push(r);
+  }
+  return out;
+}
+function applyUserFilters(rows){
+  const catBase=new Set(CATEGORIAS_VISIVEIS);
+  const catFilter=selCategoria.size?selCategoria:catBase;
+  const hasUn=selUn.size>0,hasMes=selMes.size>0,hasData=selData.size>0,hasQ=selQuebra.size>0,hasT=selTipo.size>0;
+  const out=[];
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i];
+    if(!categoriaMatchesAny(r.categoria,catBase))continue;
+    if(!categoriaMatchesAny(r.categoria,catFilter))continue;
+    if(hasUn&&!selUn.has(r.un))continue;
+    if(hasQ&&!isExecutado(r.codBaixa)&&!selQuebra.has(r.codBaixa))continue;
+    if(hasT&&!selTipo.has(r.tipoAtividade))continue;
+    if(hasMes||hasData){
+      const d=toDateStr(r.data);
+      if(hasMes&&(!d||!selMes.has(d.slice(0,7))))continue;
+      if(hasData&&(!d||!selData.has(d)))continue;
+    }
+    out.push(r);
+  }
+  return out;
+}
+function buildMultiselect(pid,values,ss,oc,le){
+  const p=document.getElementById(pid);p.innerHTML="";
+  const sw=document.createElement("div");sw.className="ms-search";
+  const si=document.createElement("input");si.type="text";si.placeholder="Buscar...";si.addEventListener("click",e=>e.stopPropagation());
+  sw.appendChild(si);p.appendChild(sw);
+  const aw=document.createElement("div");aw.className="ms-actions";
+  const aAll=document.createElement("a");aAll.textContent="Marcar todos";
+  const aNone=document.createElement("a");aNone.textContent="Desmarcar todos";
+  aw.appendChild(aAll);aw.appendChild(aNone);p.appendChild(aw);
+  const items=[];
+  values.forEach(v=>{
+    const l=document.createElement("label"),cb=document.createElement("input");
+    cb.type="checkbox";cb.value=v;cb.checked=ss.has(v);
+    cb.addEventListener("change",()=>{if(cb.checked)ss.add(v);else ss.delete(v);oc();});
+    const sp=document.createElement("span");sp.textContent=v||"(vazio)";
+    l.appendChild(cb);l.appendChild(sp);p.appendChild(l);
+    items.push({el:l,val:(v||"").toString().toLowerCase(),cb});
+  });
+  si.addEventListener("input",()=>{
+    const q=si.value.trim().toLowerCase();
+    items.forEach(it=>{it.el.style.display=(!q||it.val.includes(q))?"":"none";});
+  });
+  aAll.addEventListener("click",e=>{e.stopPropagation();items.forEach(it=>{if(it.el.style.display!=="none"&&!it.cb.checked){it.cb.checked=true;ss.add(it.cb.value);}});oc();});
+  aNone.addEventListener("click",e=>{e.stopPropagation();items.forEach(it=>{if(it.cb.checked){it.cb.checked=false;ss.delete(it.cb.value);}});oc();});
+  updateMsLabel(le,ss);
+}
+function buildMultiselectLabeled(pid,items,ss,oc,le){
+  const p=document.getElementById(pid);p.innerHTML="";
+  const sw=document.createElement("div");sw.className="ms-search";
+  const si=document.createElement("input");si.type="text";si.placeholder="Buscar...";si.addEventListener("click",e=>e.stopPropagation());
+  sw.appendChild(si);p.appendChild(sw);
+  const aw=document.createElement("div");aw.className="ms-actions";
+  const aAll=document.createElement("a");aAll.textContent="Marcar todos";
+  const aNone=document.createElement("a");aNone.textContent="Desmarcar todos";
+  aw.appendChild(aAll);aw.appendChild(aNone);p.appendChild(aw);
+  const its=[];
+  items.forEach(it=>{
+    const l=document.createElement("label"),cb=document.createElement("input");
+    cb.type="checkbox";cb.value=it.value;cb.checked=ss.has(it.value);
+    cb.addEventListener("change",()=>{if(cb.checked)ss.add(it.value);else ss.delete(it.value);oc();});
+    const sp=document.createElement("span");sp.textContent=it.label;
+    l.appendChild(cb);l.appendChild(sp);p.appendChild(l);
+    its.push({el:l,val:(it.label||"").toString().toLowerCase(),cb});
+  });
+  si.addEventListener("input",()=>{
+    const q=si.value.trim().toLowerCase();
+    its.forEach(it=>{it.el.style.display=(!q||it.val.includes(q))?"":"none";});
+  });
+  aAll.addEventListener("click",e=>{e.stopPropagation();its.forEach(it=>{if(it.el.style.display!=="none"&&!it.cb.checked){it.cb.checked=true;ss.add(it.cb.value);}});oc();});
+  aNone.addEventListener("click",e=>{e.stopPropagation();its.forEach(it=>{if(it.cb.checked){it.cb.checked=false;ss.delete(it.cb.value);}});oc();});
+  updateMsLabel(le,ss);
+}
+function updateMsLabel(el,s){if(!el)return;el.textContent=s.size===0?"Selecionar\u2026":`${s.size} selecionado(s)`;}
+function renderChips(cid,s,or){const b=document.getElementById(cid);b.innerHTML="";[...s].forEach(v=>{const c=document.createElement("span");c.className="chip";c.innerHTML=`${v||"(vazio)"} <span class="x">\u2715</span>`;c.querySelector(".x").addEventListener("click",()=>{s.delete(v);or();});b.appendChild(c);});}
+function renderChipsLabeled(cid,s,items,or){const b=document.getElementById(cid);b.innerHTML="";const map=new Map(items.map(it=>[it.value,it.label]));[...s].forEach(v=>{const c=document.createElement("span");c.className="chip";c.innerHTML=`${map.get(v)||v} <span class="x">\u2715</span>`;c.querySelector(".x").addEventListener("click",()=>{s.delete(v);or();});b.appendChild(c);});}
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function makeBar(id,labels,data,opt={}){
+  destroyChart(id);
+  const el=document.getElementById(id);if(!el)return;
+  const dm=Math.max(...data.map(v=>Number(v)||0),0);
+  const sm=opt.percent?dm+8:dm*1.12;
+  charts[id]=new Chart(el.getContext("2d"),{
+    type:"bar",
+    data:{labels,datasets:[{label:opt.label||"%",data,backgroundColor:opt.color||"#d71920",borderRadius:4,maxBarThickness:38}]},
+    options:{
+      indexAxis:opt.horizontal?"y":"x",responsive:true,maintainAspectRatio:false,
+      layout:{padding:{right:opt.horizontal?100:20,top:opt.horizontal?8:24}},
+      plugins:{
+        legend:{position:"bottom",labels:{font:{size:14}}},
+        datalabels:{display:true,clip:false,clamp:false,
+          anchor:opt.horizontal?"end":"end",align:opt.horizontal?"right":"top",offset:4,
+          font:{size:11,weight:"600"},color:"#333",
+          formatter:(v,ctx)=>{if(opt.absolutes){return (opt.percent?fmtPct(v):v)+" ("+opt.absolutes[ctx.dataIndex]+")";}return opt.percent?fmtPct(v):v;}}
+      },
+      scales:{
+        x:{ticks:{font:{size:11}},grid:{display:!opt.horizontal},beginAtZero:true,suggestedMax:opt.horizontal?sm:undefined},
+        y:{ticks:{font:{size:11}},grid:{color:"#eee"},beginAtZero:true,suggestedMax:!opt.horizontal?sm:undefined}
+      }
+    }
+  });
+}
+</script>
+<script>
+function renderVisao(rows){
+  let totalQuebras=0,totalExec=0,totalContratos=0;
+  const bc={},bu={};
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i],cb=r.codBaixa;
+    if(!cb)continue;
+    totalContratos++;
+    if(r._isExec!==undefined?r._isExec:isExecutado(cb))totalExec++;
+    else if(r._isQ!==undefined?r._isQ:!isSemInfo(cb)){totalQuebras++;bc[cb]=(bc[cb]||0)+1;if(!isSemInfo(r.un))bu[r.un]=(bu[r.un]||0)+1;}
+  }
+  const globalBR=totalContratos>0?(totalQuebras/totalContratos*100):0;
+  const globalExec=totalContratos>0?(totalExec/totalContratos*100):0;
+  const ecFull=Object.entries(bc).sort((a,b)=>b[1]-a[1]);
+  const ec=ecFull.slice(0,20);
+  makeBar("chartCodBaixa",ec.map(e=>e[0]),ec.map(e=>+pct(e[1],totalQuebras).toFixed(2)),
+    {label:"C\u00f3d Baixa (% do total de quebras)",color:"#d71920",percent:true,horizontal:true,absolutes:ec.map(e=>e[1])});
+  const euFull=Object.entries(bu).sort((a,b)=>b[1]-a[1]);
+  makeBar("chartUn",euFull.map(e=>e[0]),euFull.map(e=>+pct(e[1],totalQuebras).toFixed(2)),
+    {label:"UN (% do total de quebras)",color:"#a5121a",percent:true,horizontal:true,absolutes:euFull.map(e=>e[1])});
+  const vk=document.getElementById("visaoKpis");
+  if(vk){vk.innerHTML="";
+    const kpis=[
+      {label:"Total Contratos",val:totalContratos.toLocaleString("pt-BR")},
+      {label:"Total Executados (409)",val:`${totalExec.toLocaleString("pt-BR")} (${globalExec.toFixed(1)}%)`},
+      {label:"Total Quebras",val:totalQuebras.toLocaleString("pt-BR")},
+      {label:"% Quebras Global",val:globalBR.toFixed(1)+"%"}
+    ];
+    kpis.forEach(k=>{const d=document.createElement("div");d.className="kpi";d.innerHTML=`<div class="k-label">${k.label}</div><div class="k-val">${k.val}</div>`;vk.appendChild(d);});
+  }
+  const pp=ecFull.map(([code,qtd])=>({code,qtd,pp:totalContratos>0?qtd/totalContratos*100:0})).sort((a,b)=>b.pp-a.pp).slice(0,12);
+  makeBar("chartCodBaixaPP",pp.map(e=>e.code),pp.map(e=>+e.pp.toFixed(2)),
+    {label:"PP sobre Total de Contratos (Quebras + 409)",color:"#d71920",percent:true,horizontal:true,absolutes:pp.map(e=>e.qtd)});
+}
+function renderAgenda(rows){
+  const c={"08 - 12":0,"12 - 15":0,"15 - 18":0};
+  for(let i=0;i<rows.length;i++){const r=rows[i];if((r._isQ!==undefined?r._isQ:isQuebra(r))&&c[r.janela]!==undefined)c[r.janela]++;}
+  makeBar("chartAgenda",JANELAS_AGENDA,JANELAS_AGENDA.map(l=>c[l]),{label:"Quantidade",color:"#2fa84f"});
+}
+function renderPareto(rows){
+  const by={};
+  for(let i=0;i<rows.length;i++){const r=rows[i];if(r._isQ!==undefined?r._isQ:isQuebra(r))by[r.codBaixa]=(by[r.codBaixa]||0)+1;}
+  const s=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const labels=s.map(e=>e[0]),values=s.map(e=>e[1]),total=values.reduce((a,b)=>a+b,0);
+  let ac=0;const cum=values.map(v=>{ac+=v;return +pct(ac,total).toFixed(1);});
+  destroyChart("chartPareto");
+  const el=document.getElementById("chartPareto");if(!el)return;
+  charts["chartPareto"]=new Chart(el.getContext("2d"),{
+    data:{labels,datasets:[
+      {type:"bar",label:"Quantidade",data:values,backgroundColor:"#2f6fd7",yAxisID:"y",borderRadius:4,maxBarThickness:60,
+       datalabels:{display:true,anchor:"end",align:"top",color:"#222",font:{size:13,weight:"600"}}},
+      {type:"line",label:"% Acumulado",data:cum,borderColor:"#f2c744",backgroundColor:"#f2c744",yAxisID:"y1",tension:.25,pointRadius:5,
+       datalabels:{display:true,align:"top",color:"#a58200",font:{size:13,weight:"700"},formatter:v=>v+"%"}}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom",labels:{font:{size:14}}}},
+      scales:{x:{ticks:{font:{size:12}}},
+        y:{beginAtZero:true,position:"left",ticks:{font:{size:12}},title:{display:true,text:"Qtd"}},
+        y1:{beginAtZero:true,max:110,position:"right",grid:{drawOnChartArea:false},ticks:{font:{size:12},callback:v=>v+"%"},title:{display:true,text:"% Acumulado"}}
+      }}
+  });
+}
+function renderEvolutivo(rows){
+  const box=document.getElementById("evolutivoContainer");box.innerHTML="";
+  Object.keys(charts).filter(k=>k.startsWith("evo_")).forEach(destroyChart);
+  const by={};const dateSet=new Set();
+  for(let i=0;i<rows.length;i++){const r=rows[i];if(!(r._isQ!==undefined?r._isQ:isQuebra(r)))continue;by[r.codBaixa]=(by[r.codBaixa]||0)+1;const d=r._ds||toDateStr(r.data);if(d)dateSet.add(d);}
+  const top=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,10).map(e=>e[0]);
+  if(!top.length){box.innerHTML='<div class="empty-hint">Sem dados.</div>';return;}
+  const dates=[...dateSet].sort();
+  const topSet=new Set(top);const counts={};
+  top.forEach(cod=>{counts[cod]={};dates.forEach(d=>counts[cod][d]=0);});
+  for(let i=0;i<rows.length;i++){const r=rows[i];if(!topSet.has(r.codBaixa))continue;const d=r._ds||toDateStr(r.data);if(d&&counts[r.codBaixa][d]!==undefined)counts[r.codBaixa][d]++;}
+  const dateLabels=dates.map(ddmm);
+  top.forEach((cod,idx)=>{
+    const arr=dates.map(d=>counts[cod][d]);
+    const card=document.createElement("div");card.className="card";
+    card.innerHTML=`<h3>${cod}</h3><div class="chart-wrap mini"><canvas id="evo_${idx}"></canvas></div>`;
+    box.appendChild(card);
+    const el=document.getElementById(`evo_${idx}`);
+    charts[`evo_${idx}`]=new Chart(el.getContext("2d"),{
+      type:"line",
+      data:{labels:dateLabels,datasets:[{label:cod,data:arr,borderColor:"#d71920",backgroundColor:"rgba(215,25,32,.15)",tension:.25,fill:true,pointRadius:4,pointBackgroundColor:"#d71920",datalabels:{display:true,align:"top",color:"#333",font:{size:13,weight:"600"}}}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:12}}},y:{beginAtZero:true,ticks:{font:{size:12},precision:0}}}}
+    });
+  });
+}
+function isoWeekOfMonth(d){
+  const dt=new Date(d+"T00:00:00");if(isNaN(dt))return null;
+  const y=dt.getFullYear(),m=dt.getMonth()+1,day=dt.getDate();
+  const n=Math.ceil((day+new Date(y,m-1,1).getDay())/7);
+  const yyyymm=`${y}${String(m).padStart(2,"0")}`;
+  return {label:`Semana ${n} ${yyyymm}`,key:`${yyyymm}-${n}`,n,yyyymm};
+}
+function renderEvoQuebras(rows){
+  const table=document.getElementById("pivotTable");
+  const by={};
+  for(let i=0;i<rows.length;i++){const r=rows[i];if(r._isQ!==undefined?r._isQ:isQuebra(r))by[r.codBaixa]=(by[r.codBaixa]||0)+1;}
+  const top6=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,6).map(e=>e[0]);
+  const top6Set=new Set(top6);
+  const weeks=new Map();
+  for(let i=0;i<rows.length;i++){const r=rows[i];const d=r._ds||toDateStr(r.data);if(!d)continue;const w=isoWeekOfMonth(d);if(w)weeks.set(w.key,w.label);}
+  const weekKeys=[...weeks.keys()].sort();
+  const volKpis=document.getElementById("volKpis");
+  if(!top6.length||!weekKeys.length){
+    table.innerHTML='<tr><td class="empty-hint">Sem dados suficientes.</td></tr>';
+    destroyChart("chartEvoQuebrasLine");destroyChart("chartEvoQuebrasStacked");destroyChart("chartEvoQuebrasDaily");destroyChart("chartEvoQuebrasVolume");
+    if(volKpis)volKpis.innerHTML="";return;
+  }
+  const totalWeek={};weekKeys.forEach(k=>totalWeek[k]=0);
+  for(let i=0;i<rows.length;i++){const r=rows[i];if(!(r._isQ!==undefined?r._isQ:isQuebra(r)))continue;const d=r._ds||toDateStr(r.data);if(!d)continue;const w=isoWeekOfMonth(d);if(w&&weekKeys.includes(w.key))totalWeek[w.key]++;}
+  const countByCodWeek={};
+  top6.forEach(cod=>{countByCodWeek[cod]={};weekKeys.forEach(k=>countByCodWeek[cod][k]=0);});
+  for(let i=0;i<rows.length;i++){const r=rows[i];if(!top6Set.has(r.codBaixa))continue;const d=r._ds||toDateStr(r.data);if(!d)continue;const w=isoWeekOfMonth(d);if(w&&weekKeys.includes(w.key))countByCodWeek[r.codBaixa][w.key]++;}
+  let html="<thead><tr><th>Quebras</th>";
+  weekKeys.forEach(k=>html+=`<th>${weeks.get(k)}</th>`);
+  html+="</tr></thead><tbody>";
+  top6.forEach(cod=>{html+=`<tr><td>${cod}</td>`;weekKeys.forEach(k=>{const c=countByCodWeek[cod][k];const p=totalWeek[k]>0?pct(c,totalWeek[k]):0;html+=`<td>${fmtPct(p)}</td>`;});html+="</tr>";});
+  html+="</tbody>";table.innerHTML=html;
+  destroyChart("chartEvoQuebrasLine");
+  const lineEl=document.getElementById("chartEvoQuebrasLine");
+  if(lineEl){
+    const lds=top6.map((cod,idx)=>{const dp=weekKeys.map(k=>{const c=countByCodWeek[cod][k];return totalWeek[k]>0?+(pct(c,totalWeek[k])).toFixed(1):0;});const col=PALETTE[idx%PALETTE.length];return {label:cod,data:dp,borderColor:col,backgroundColor:col,tension:.25,pointRadius:5,pointBackgroundColor:col,borderWidth:2.5,fill:false,datalabels:{display:true,align:"top",color:col,font:{size:11,weight:"600"},formatter:v=>v+"%"}};});
+    charts["chartEvoQuebrasLine"]=new Chart(lineEl.getContext("2d"),{type:"line",data:{labels:weekKeys.map(k=>weeks.get(k)),datasets:lds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{font:{size:14},boxWidth:14,padding:12}}},scales:{x:{ticks:{font:{size:13}}},y:{beginAtZero:true,ticks:{font:{size:13},callback:v=>v+"%"}}}}});
+  }
+  destroyChart("chartEvoQuebrasStacked");
+  const stEl=document.getElementById("chartEvoQuebrasStacked");
+  const monthKeys=(()=>{const s=new Set();for(let i=0;i<rows.length;i++){const d=rows[i]._ds||toDateStr(rows[i].data);if(d)s.add(d.slice(0,7));}return [...s].sort();})();
+  if(stEl&&monthKeys.length){
+    const monthSet=new Set(monthKeys);const totalMonth={};monthKeys.forEach(m=>totalMonth[m]=0);
+    for(let i=0;i<rows.length;i++){const r=rows[i];if(!(r._isQ!==undefined?r._isQ:isQuebra(r)))continue;const d=r._ds||toDateStr(r.data);if(!d)continue;const m=d.slice(0,7);if(monthSet.has(m))totalMonth[m]++;}
+    const cbcm={};top6.forEach(cod=>{cbcm[cod]={};monthKeys.forEach(m=>cbcm[cod][m]=0);});
+    for(let i=0;i<rows.length;i++){const r=rows[i];if(!top6Set.has(r.codBaixa))continue;const d=r._ds||toDateStr(r.data);if(!d)continue;const m=d.slice(0,7);if(monthSet.has(m))cbcm[r.codBaixa][m]++;}
+    const ml=monthKeys.map(m=>{const [y,mm]=m.split("-");return `${mm}/${y}`;});
+    const ds=top6.map((cod,idx)=>{const col=PALETTE[idx%PALETTE.length];const dp=monthKeys.map(m=>{const c=cbcm[cod][m];return totalMonth[m]>0?+(pct(c,totalMonth[m])).toFixed(1):0;});return {label:cod,data:dp,backgroundColor:col,borderColor:"#fff",borderWidth:1,stack:"stack1",datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>3,color:"#fff",font:{size:12,weight:"700"},formatter:v=>v+"%",anchor:"center",align:"center"}};});
+    charts["chartEvoQuebrasStacked"]=new Chart(stEl.getContext("2d"),{type:"bar",data:{labels:ml,datasets:ds},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:10}},plugins:{legend:{position:"bottom",labels:{font:{size:14},boxWidth:14,padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y}%`}}},scales:{x:{stacked:true,ticks:{font:{size:13}},grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{font:{size:13},callback:v=>v+"%"},title:{display:true,text:"% do m\u00eas",font:{size:13}}}}}});
+  }
+  destroyChart("chartEvoQuebrasDaily");
+  const dayEl=document.getElementById("chartEvoQuebrasDaily");
+  const dayKeys=(()=>{const s=new Set();for(let i=0;i<rows.length;i++){const d=rows[i]._ds||toDateStr(rows[i].data);if(d)s.add(d);}return [...s].sort();})();
+  const daySet=new Set(dayKeys);const totalDay={};dayKeys.forEach(d=>totalDay[d]=0);
+  for(let i=0;i<rows.length;i++){const r=rows[i];if(!(r._isQ!==undefined?r._isQ:isQuebra(r)))continue;const d=r._ds||toDateStr(r.data);if(d&&daySet.has(d))totalDay[d]++;}
+  if(dayEl&&dayKeys.length){
+    const cbcd={};top6.forEach(cod=>{cbcd[cod]={};dayKeys.forEach(d=>cbcd[cod][d]=0);});
+    for(let i=0;i<rows.length;i++){const r=rows[i];if(!top6Set.has(r.codBaixa))continue;const d=r._ds||toDateStr(r.data);if(d&&daySet.has(d))cbcd[r.codBaixa][d]++;}
+    const dl=dayKeys.map(d=>ddmm(d));
+    const ds=top6.map((cod,idx)=>{const col=PALETTE[idx%PALETTE.length];const dp=dayKeys.map(d=>{const c=cbcd[cod][d];return totalDay[d]>0?+(pct(c,totalDay[d])).toFixed(1):0;});return {label:cod,data:dp,backgroundColor:col,borderColor:"#fff",borderWidth:1,stack:"stack1",datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>5,color:"#fff",font:{size:11,weight:"700"},formatter:v=>v+"%",anchor:"center",align:"center"}};});
+    charts["chartEvoQuebrasDaily"]=new Chart(dayEl.getContext("2d"),{type:"bar",data:{labels:dl,datasets:ds},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:10}},plugins:{legend:{position:"bottom",labels:{font:{size:14},boxWidth:14,padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y}%`}}},scales:{x:{stacked:true,ticks:{font:{size:12},autoSkip:false,maxRotation:60,minRotation:0},grid:{display:false},title:{display:true,text:"Dia (DD/MM)",font:{size:13}}},y:{stacked:true,beginAtZero:true,ticks:{font:{size:13},callback:v=>v+"%"},title:{display:true,text:"% do dia",font:{size:13}}}}}});
+  }
+  destroyChart("chartEvoQuebrasVolume");
+  const volEl=document.getElementById("chartEvoQuebrasVolume");
+  if(volKpis)volKpis.innerHTML="";
+  if(volEl&&dayKeys.length){
+    const quebrasDay={},execDay={},totalAtendDay={};
+    dayKeys.forEach(d=>{quebrasDay[d]=0;execDay[d]=0;totalAtendDay[d]=0;});
+    for(let i=0;i<rows.length;i++){const r=rows[i];const d=r._ds||toDateStr(r.data);if(!d||!daySet.has(d))continue;const cb=r.codBaixa;if(!cb)continue;totalAtendDay[d]++;if(r._isExec!==undefined?r._isExec:isExecutado(cb))execDay[d]++;else if(r._isQ!==undefined?r._isQ:!isSemInfo(cb))quebrasDay[d]++;}
+    const totalQuebras=Object.values(quebrasDay).reduce((s,v)=>s+v,0);
+    const totalExec=Object.values(execDay).reduce((s,v)=>s+v,0);
+    const totalGeral=Object.values(totalAtendDay).reduce((s,v)=>s+v,0);
+    const globalBR=totalGeral>0?(totalQuebras/totalGeral*100):0;
+    const pctVals=dayKeys.map(d=>totalAtendDay[d]>0?+(quebrasDay[d]/totalAtendDay[d]*100).toFixed(1):0);
+    if(volKpis){const kpis=[{label:"Total Contratos",val:totalGeral.toLocaleString("pt-BR")},{label:"Total Executados (409)",val:totalExec.toLocaleString("pt-BR")},{label:"Total Quebras",val:totalQuebras.toLocaleString("pt-BR")},{label:"% Quebras Global",val:globalBR.toFixed(1)+"%"}];kpis.forEach(k=>{const d=document.createElement("div");d.className="kpi";d.innerHTML=`<div class="k-label">${k.label}</div><div class="k-val">${k.val}</div>`;volKpis.appendChild(d);});}
+    charts["chartEvoQuebrasVolume"]=new Chart(volEl.getContext("2d"),{type:"bar",data:{labels:dayKeys.map(d=>ddmm(d)),datasets:[{label:"% Quebras do Dia",data:pctVals,backgroundColor:"#2f6fd7",borderRadius:4,maxBarThickness:42,datalabels:{display:true,anchor:"end",align:"top",offset:4,clip:false,clamp:false,color:"#1a3d7c",font:{size:12,weight:"700"},formatter:v=>fmtPct(v)}}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:28,right:20}},plugins:{legend:{position:"bottom",labels:{font:{size:14},boxWidth:14,padding:12}},tooltip:{callbacks:{label:ctx=>{const dk=dayKeys[ctx.dataIndex];return `${fmtPct(ctx.parsed.y)} \u2014 ${quebrasDay[dk]} quebras / ${totalAtendDay[dk]} atend. (${execDay[dk]} exec.)`;}}}},scales:{x:{ticks:{font:{size:12},autoSkip:false,maxRotation:60,minRotation:0},grid:{display:false},title:{display:true,text:"Dia (DD/MM)",font:{size:13}}},y:{beginAtZero:true,ticks:{font:{size:13},callback:v=>v+"%"},title:{display:true,text:"% Quebras / Total Atendimentos",font:{size:13}}}}}});
+  }
+}
+function renderLoginOfensor(rows){
+  const tb=document.querySelector("#loginTable tbody");tb.innerHTML="";
+  const map={};
+  for(let i=0;i<rows.length;i++){const r=rows[i];if(!(r._isQ!==undefined?r._isQ:!isSemInfo(r.codBaixa)&&!isExecutado(r.codBaixa)))continue;if(isSemInfo(r.login)||isSemInfo(r.un))continue;const k=r.login+"||"+r.codBaixa+"||"+r.un;map[k]=(map[k]||0)+1;}
+  const e=Object.entries(map).map(([k,v])=>{const [l,m,u]=k.split("||");return {login:l,motivo:m,un:u,q:v};}).sort((a,b)=>b.q-a.q).slice(0,50);
+  const total=e.reduce((s,x)=>s+x.q,0),max=Math.max(...e.map(x=>x.q),1);
+  e.forEach(x=>{const p=pct(x.q,total),w=(x.q/max*100).toFixed(1);const tr=document.createElement("tr");tr.innerHTML=`<td>${x.login}</td><td style="text-align:left">${x.motivo}</td><td>${x.un}</td><td><div class="funnel-bar"><div class="funnel-fill" style="width:${w}%">${x.q}</div></div></td><td>${fmtPct(p)}</td>`;tb.appendChild(tr);});
+  if(!e.length)tb.innerHTML='<tr><td colspan="5" style="padding:30px;color:#888">Sem dados.</td></tr>';
+}
+function refreshFilters(){
+  buildMultiselect("msCategoriaPanel",CATEGORIAS_VISIVEIS,selCategoria,()=>{renderChips("chipsCategoria",selCategoria,refreshAll);updateMsLabel(document.querySelector("#msCategoria .ms-label"),selCategoria);refreshAll();},document.querySelector("#msCategoria .ms-label"));
+  renderChips("chipsCategoria",selCategoria,refreshAll);
+  const uns=[...new Set(PROCESSED.map(r=>r.un).filter(x=>x&&!isSemInfo(x)))].sort();
+  buildMultiselect("msUnPanel",uns,selUn,()=>{renderChips("chipsUn",selUn,refreshAll);updateMsLabel(document.querySelector("#msUn .ms-label"),selUn);refreshAll();},document.querySelector("#msUn .ms-label"));
+  renderChips("chipsUn",selUn,refreshAll);
+  const meses=[...new Set(PROCESSED.map(r=>toDateStr(r.data)).filter(Boolean).map(d=>d.slice(0,7)))].sort();
+  const ml=meses.map(m=>{const [y,mm]=m.split("-");return {value:m,label:`${mm}/${y}`};});
+  buildMultiselectLabeled("msMesPanel",ml,selMes,()=>{renderChipsLabeled("chipsMes",selMes,ml,refreshAll);updateMsLabel(document.querySelector("#msMes .ms-label"),selMes);refreshAll();},document.querySelector("#msMes .ms-label"));
+  renderChipsLabeled("chipsMes",selMes,ml,refreshAll);
+  const datas=[...new Set(PROCESSED.map(r=>toDateStr(r.data)).filter(Boolean))].sort();
+  const dl=datas.map(d=>{const [y,m,dd]=d.split("-");return {value:d,label:`${dd}/${m}/${y}`};});
+  buildMultiselectLabeled("msDataPanel",dl,selData,()=>{renderChipsLabeled("chipsData",selData,dl,refreshAll);updateMsLabel(document.querySelector("#msData .ms-label"),selData);refreshAll();},document.querySelector("#msData .ms-label"));
+  renderChipsLabeled("chipsData",selData,dl,refreshAll);
+  const quebras=[...new Set(PROCESSED.map(r=>r.codBaixa).filter(cb=>cb&&!isSemInfo(cb)&&!isExecutado(cb)))].sort();
+  buildMultiselect("msQuebraPanel",quebras,selQuebra,()=>{renderChips("chipsQuebra",selQuebra,refreshAll);updateMsLabel(document.querySelector("#msQuebra .ms-label"),selQuebra);refreshAll();},document.querySelector("#msQuebra .ms-label"));
+  renderChips("chipsQuebra",selQuebra,refreshAll);
+  const tipos=[...new Set(PROCESSED.map(r=>r.tipoAtividade).filter(x=>x&&!isSemInfo(x)))].sort();
+  buildMultiselect("msTipoPanel",tipos,selTipo,()=>{renderChips("chipsTipo",selTipo,refreshAll);updateMsLabel(document.querySelector("#msTipo .ms-label"),selTipo);refreshAll();},document.querySelector("#msTipo .ms-label"));
+  renderChips("chipsTipo",selTipo,refreshAll);
+}
+function updateStatusBar(){
+  document.getElementById("stFile").textContent=fileName;
+  document.getElementById("stSheet").textContent=sheetUsed;
+  document.getElementById("stRaw").textContent=RAW.length;
+  document.getElementById("stProcessed").textContent=PROCESSED.length;
+  document.getElementById("stFiltered").textContent=FILTERED.length;
+}
+function updateClearButtons(){
+  const map={categoria:selCategoria,un:selUn,mes:selMes,data:selData,quebra:selQuebra,tipo:selTipo};
+  document.querySelectorAll(".filter-clear").forEach(b=>{const s=map[b.dataset.clear];if(!s)return;const isDefault=b.dataset.clear==="categoria"?(s.size===CATEGORIAS_VISIVEIS.length):(s.size===0);if(isDefault)b.classList.add("hidden");else b.classList.remove("hidden");});
+}
+function refreshAll(){
+  FILTERED=applyUserFilters(PROCESSED);
+  for(let i=0;i<FILTERED.length;i++){const r=FILTERED[i];r._ds=toDateStr(r.data);r._isExec=isExecutado(r.codBaixa);r._isQ=!isSemInfo(r.codBaixa)&&!r._isExec;}
+  document.getElementById("emptyHint").style.display=RAW.length?"none":"block";
+  renderVisao(FILTERED);renderAgenda(FILTERED);renderPareto(FILTERED);renderEvolutivo(FILTERED);renderEvoQuebras(FILTERED);renderLoginOfensor(FILTERED);
+  updateStatusBar();updateClearButtons();
+}
+document.getElementById("fileInput").addEventListener("change",async(e)=>{
+  const f=e.target.files[0];if(!f)return;
+  fileName=f.name;
+  document.getElementById("stMsg").textContent="\u23f3 Carregando\u2026";
+  try{
+    let rows=[],sn="";
+    const isCSV=f.name.toLowerCase().endsWith(".csv");
+    if(isCSV){const txt=await f.text();rows=parseCsvNative(txt);sn="CSV";}
+    else{const buf=await f.arrayBuffer();const wb=await parseXlsxNative(buf);const p=pickSheet(wb);sn=p.name;rows=p.rows;}
+    sheetUsed=sn;RAW=mapRows(rows);PROCESSED=applyGlobalRules(RAW);
+    selCategoria=new Set(CATEGORIAS_VISIVEIS);selUn=new Set();selMes=new Set();selData=new Set();selQuebra=new Set();selTipo=new Set();
+    refreshFilters();refreshAll();
+    document.getElementById("statusBar").classList.remove("error");
+    document.getElementById("stMsg").textContent=`\u2705 Carregado (${RAW.length} linhas)`;
+    setTimeout(()=>{document.getElementById("stMsg").textContent="";},5000);
+  }catch(err){console.error(err);document.getElementById("statusBar").classList.add("error");document.getElementById("stMsg").textContent="\u274c Erro: "+err.message;alert("Erro ao carregar arquivo:\n\n"+err.message);}
+});
+document.getElementById("btnCsv").addEventListener("click",()=>{
+  if(!FILTERED.length){alert("Sem dados para exportar.");return;}
+  const cols=["categoria","un","codBaixa","janela","inicio","contrato","data","login","tipoAtividade","_exec"];
+  const heads=["Categorias da Capacidade","UN","C\u00f3d de Baixa 1","Janela de Servi\u00e7o","In\u00edcio","Contrato","Data","Login do T\u00e9cnico","Tipo de Atividade","Executado (409)"];
+  const ls=[heads.join(";")];
+  FILTERED.forEach(r=>{ls.push(cols.map(c=>{let v=c==="_exec"?(isExecutado(r.codBaixa)?"Sim":"N\u00e3o"):r[c];if(v instanceof Date)v=v.toISOString();return `"${String(v==null?"":v).replace(/"/g,'""')}"`;}).join(";"));});
+  const b=new Blob(["\ufeff"+ls.join("\n")],{type:"text/csv;charset=utf-8"});
+  const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download="quebra_agenda_filtrado.csv";a.click();URL.revokeObjectURL(u);
+});
+document.getElementById("btnClear").addEventListener("click",()=>{selCategoria=new Set(CATEGORIAS_VISIVEIS);selUn=new Set();selMes=new Set();selData=new Set();selQuebra=new Set();selTipo=new Set();refreshFilters();refreshAll();});
+document.querySelectorAll(".filter-clear").forEach(b=>{b.addEventListener("click",e=>{e.stopPropagation();const which=b.dataset.clear;if(which==="categoria")selCategoria=new Set(CATEGORIAS_VISIVEIS);else if(which==="un")selUn=new Set();else if(which==="mes")selMes=new Set();else if(which==="data")selData=new Set();else if(which==="quebra")selQuebra=new Set();else if(which==="tipo")selTipo=new Set();refreshFilters();refreshAll();});});
+document.querySelectorAll(".tab").forEach(t=>{t.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));t.classList.add("active");document.getElementById("tab-"+t.dataset.tab).classList.add("active");Object.values(charts).forEach(c=>{try{c.resize();}catch(e){}});});});
+document.querySelectorAll(".ms-toggle").forEach(t=>{t.addEventListener("click",(e)=>{e.stopPropagation();const id=t.dataset.target;document.querySelectorAll(".ms-panel").forEach(p=>{if(p.id!==id)p.classList.remove("open");});document.getElementById(id).classList.toggle("open");});});
+document.addEventListener("click",()=>{document.querySelectorAll(".ms-panel").forEach(p=>p.classList.remove("open"));});
+function _boot(){try{if(window.Chart&&window.ChartDataLabels){Chart.register(ChartDataLabels);Chart.defaults.plugins.datalabels.display=false;}refreshFilters();updateStatusBar();updateClearButtons();}catch(err){console.error("Boot error:",err);document.getElementById("stMsg").textContent="\u274c "+err.message;}}
+if(window._libsFired){_boot();}else{document.addEventListener("libsReady",_boot);}
+</script>
+</body>
+</html>
