@@ -23,7 +23,7 @@ Basta fazer o **upload** de uma planilha `.xlsx` ou `.csv` — todo o processame
 ## ✨ Funcionalidades
 
 ### 🔎 6 Filtros dinâmicos
-- **Categorias da Capacidade** (Classe 1, Classe 1 PME, Classe 15)
+- **Categorias da Capacidade** (Categorias da Capacidade)
 - **UN** (Recurso Pai)
 - **Mês / Ano** (MM/AAAA)
 - **Data** (DD/MM/AAAA)
@@ -38,8 +38,8 @@ Basta fazer o **upload** de uma planilha `.xlsx` ou `.csv` — todo o processame
 | **Visão Executiva** | Cód Baixa (Top 20 %), UN (%), KPIs de validação, Pontos Percentuais |
 | **Quebra Agenda Janela** | Distribuição por janela de serviço (08-12 / 12-15 / 15-18) |
 | **Pareto** | Top 6 motivos + linha de % acumulado |
-| **Evolutivo** | Evolução diária das 10 principais quebras |
-| **Evolutivo Quebras TOP 6** | Tabela pivô + linha semanal + barras mensal/diária + Volume Diário (%) |
+| **Evolutivo** | Evolução diária das 15 principais quebras |
+| **Evolutivo Quebras** | Tabela pivô + linha semanal + barras mensal/diária + Volume Diário (%) |
 | **Login Ofensor** | Ranking de técnicos por quebra (estilo funil) |
 
 ### ⚙️ Regras de negócio automáticas
