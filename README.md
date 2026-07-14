@@ -1,6 +1,6 @@
-# 📊 QUEBRA DE AGENDA – TOA SALVADOR
+# 📊 Acompanhamento de Quebra - TOA
 
-Dashboard operacional interativo para análise de **Quebras de Agenda** da operação TOA Salvador.
+Dashboard operacional interativo para análise de **Quebras de Agenda** .
 100% client-side (HTML + JavaScript), funciona direto no navegador — **sem servidor, sem instalação**.
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
